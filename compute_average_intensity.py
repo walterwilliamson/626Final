@@ -27,3 +27,4 @@ avg_df.head()
 
 # did this work
 # did this work part 2
+# walter was here

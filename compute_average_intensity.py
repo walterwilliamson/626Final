@@ -26,3 +26,4 @@ avg_df.to_csv('avg_intensity.csv', index=False)
 avg_df.head()
 
 # did this work
+# did this work part 2

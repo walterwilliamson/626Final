@@ -20,14 +20,3 @@ def preprocess_data(image_dir, n_train):
     return train_data, test_data
 
 
-# Test the function with image directory
-# This can be deleted later or commented out or something it just makes sure the right images go in
-# each category
-outer_image_dir = 'images'
-outer_n_train = 225  # Number of training images
-test_train_data, test_test_data = preprocess_data(outer_image_dir, outer_n_train)
-
-print("Training Data:")
-print(test_train_data)
-print("\nTesting Data:")
-print(test_test_data)

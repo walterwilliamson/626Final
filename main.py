@@ -2,22 +2,19 @@ import numpy as np
 import pandas as pd
 from keras.models import Sequential
 from keras.layers import Dense, Input
+from data_preprocessing import preprocess_data
 
 
-# Load data from files
-avg_intensity = pd.read_csv("avg_intensity.csv")
-train_data = pd.read_csv("train_data.csv")
-
-# Combine on id column
-combined_df = pd.merge(avg_intensity, train_data, on='id', how='inner')
-
-# Check to make sure it worked
-print(combined_df)
+#use function from data_preprocessing.py
+data = preprocess_data()
+train = data[0]
+test = data[1]
 
 # Create outcome vector
-Y = combined_df['OSmonth']
-# Create input vector
-X = combined_df.drop(['id', 'OSmonth'], axis=1)
+train_Y = train['OSmonth']
+# Create input vectors
+train_X = train.drop(['id', 'OSmonth'], axis=1)
+test_X = test
 
 # Create empty model
 model = Sequential()
@@ -35,7 +32,7 @@ model.add(Dense(1, kernel_initializer='normal'))
 model.compile(loss='mean_squared_error', optimizer='adam')
 
 # Fit the model to training set
-model.fit(X, Y, batch_size=5, epochs=300)
+model.fit(train_X, train_Y, batch_size=5, epochs=300)
 
 # Generating Predictions on testing data
 Predictions = model.predict(X)

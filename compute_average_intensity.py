@@ -9,7 +9,7 @@ import os
 
 # ---------- specify these args ----------
 img_dir = 'images'  # dir that saves your images
-n_train = 225  # number of images
+n_train = 281  # number of images
 n_protein = 52  # number of proteins
 # ----------------------------------------
 
@@ -23,7 +23,7 @@ for i in tqdm(np.arange(1, n_train + 1), total=n_train, desc="Processing"):
 avg_df = pd.DataFrame(avg_list, columns=['id'] + ['protein' + str(i) for i in range(1, 52 + 1)])
 avg_df.to_csv('avg_intensity.csv', index=False)
 
-avg_df.head()
+print(avg_df.head())
 
 # did this work
 # did this work part 2

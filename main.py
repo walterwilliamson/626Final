@@ -39,6 +39,10 @@ model.fit(train_X, train_Y, batch_size=5, epochs=300)
 # ask tomorrow haha
 Predictions = model.predict(test_X.drop(test_X.columns[0], axis=1))
 
+# For testing
+# Predictions = model.predict(train_X)
+# TestingData = pd.DataFrame(data=train_X, columns=train_X.columns[1:])
+
 # Get test data
 
 # For Wednesday - We don't know the actual outcomes do we? Just realized that we might

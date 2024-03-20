@@ -4,8 +4,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Input
 from data_preprocessing import preprocess_data
 
-
-#use function from data_preprocessing.py
+# use function from data_preprocessing.py
 data = preprocess_data()
 train = data[0]
 test = data[1]
@@ -34,8 +33,10 @@ model.compile(loss='mean_squared_error', optimizer='adam')
 # Fit the model to training set
 model.fit(train_X, train_Y, batch_size=5, epochs=300)
 
-# Generating Predictions on testing data
-Predictions = model.predict(X)
+# Generating Predictions on testing data - drop id column when passing test_X
+# Also not 100% sure this is what we were supposed to past just adding a reminder to
+# ask tomorrow haha
+Predictions = model.predict(test_X.drop(test_X.columns[0], axis=1))
 
 # Get test data
 

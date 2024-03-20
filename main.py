@@ -20,9 +20,10 @@ model = Sequential()
 
 # Defining the Input layer
 model.add(Input(shape=(52,)))
+
 # model.add(Dense(units=36, input_dim=52, kernel_initializer='normal', activation='relu'))
 model.add(Dense(units=36, activation='relu'))
-model.add(Dense(units=36, activation='tanh'))
+# model.add(Dense(units=36, activation='tanh'))
 
 # Output layer
 model.add(Dense(1, kernel_initializer='normal'))
@@ -43,6 +44,5 @@ Predictions = model.predict(test_X.drop(test_X.columns[0], axis=1))
 # For Wednesday - We don't know the actual outcomes do we? Just realized that we might
 # not need that column. No idea why it's the same number for all of the predictions
 TestingData = pd.DataFrame(data=test_X.drop(test_X.columns[0], axis=1), columns=test_X.columns[1:])
-# TestingData['ActualOutcome'] = train_Y
 TestingData['Predicted Survival Months'] = Predictions
 print(TestingData.head())

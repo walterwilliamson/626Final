@@ -40,9 +40,9 @@ Predictions = model.predict(test_X.drop(test_X.columns[0], axis=1))
 
 # Get test data
 
-# For Wednesday
-
-# TestingData = pd.DataFrame(data=test_data, columns=Predictors)
-# TestingData['Price'] = y_test_orig
-# TestingData['PredictedPrice'] = Predictions
-# TestingData.head()
+# For Wednesday - We don't know the actual outcomes do we? Just realized that we might
+# not need that column. No idea why it's the same number for all of the predictions
+TestingData = pd.DataFrame(data=test_X.drop(test_X.columns[0], axis=1), columns=test_X.columns[1:])
+# TestingData['ActualOutcome'] = train_Y
+TestingData['Predicted Survival Months'] = Predictions
+print(TestingData.head())

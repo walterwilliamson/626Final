@@ -6,7 +6,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import StandardScaler
 from data_preprocessing import preprocess_data
 from keras.layers import Dropout
-from sklearn.model_selection import KFold
+from cv import kfold_cv
 
 
 # use function from data_preprocessing.py
@@ -31,44 +31,11 @@ test_X_normalized = scaler.transform(test_X_dropped)
 train_X_normalized = pd.DataFrame(train_X_normalized, columns=train_X.columns)
 test_X_normalized = pd.DataFrame(test_X_normalized, columns=test_X_dropped.columns)
 
-# Define the number of folds for cross-validation
-num_folds = 5
+# epochs to try
+epochs = [21, 22, 23, 24, 25, 26, 27, 28, 29]
 
-# Initialize KFold object
-kf = KFold(n_splits=num_folds)
-
-# Lists to store MSE for each fold
-mse_scores = []
-
-# Perform k-fold cross-validation
-for train_index, val_index in kf.split(train_X_normalized):
-    # Split data into training and validation sets for this fold
-    X_train_fold, X_val_fold = train_X_normalized.iloc[train_index], train_X_normalized.iloc[val_index]
-    y_train_fold, y_val_fold = train_Y.iloc[train_index], train_Y.iloc[val_index]
-
-    # Create a new model for each fold
-    model_cv = Sequential()
-    model_cv.add(Input(shape=(104,)))
-    model_cv.add(Dense(units=72, activation='relu'))
-    model_cv.add(Dropout(0.01))
-    model_cv.add(Dense(units=48, activation='relu'))
-    model_cv.add(Dropout(0.01))
-    model_cv.add(Dense(units=24, activation='relu'))
-    model_cv.add(Dropout(0.01))
-    model_cv.add(Dense(1, kernel_initializer='normal'))
-    model_cv.compile(loss='mean_squared_error', optimizer='adam')
-
-    # Train the model on this fold
-    model_cv.fit(X_train_fold, y_train_fold, batch_size=10, epochs=50, verbose=0)
-
-    # Evaluate the model on the validation set for this fold
-    y_pred_fold = model_cv.predict(X_val_fold)
-    mse_fold = mean_squared_error(y_val_fold, y_pred_fold)
-    mse_scores.append(mse_fold)
-
-# Calculate average MSE across all folds
-avg_mse = np.mean(mse_scores)
-print('Average MSE across all folds:', avg_mse)
+for e in epochs:
+    kfold_cv(5, e, train_X_normalized, train_Y)
 
 # Train the final model on the entire training set
 final_model = Sequential()
@@ -83,7 +50,7 @@ final_model.add(Dense(1, kernel_initializer='normal'))
 final_model.compile(loss='mean_squared_error', optimizer='adam')
 
 # Train the final model on the entire training set
-final_model.fit(train_X_normalized, train_Y, batch_size=10, epochs=50)
+final_model.fit(train_X_normalized, train_Y, batch_size=10, epochs=21)
 
 # Make predictions on the test set using the final trained model
 test_predictions = final_model.predict(test_X_normalized)

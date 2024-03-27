@@ -4,9 +4,10 @@ from keras.models import Sequential
 from keras.layers import Dense, Input
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import StandardScaler
-
 from data_preprocessing import preprocess_data
 from keras.layers import Dropout
+from sklearn.model_selection import KFold
+
 
 # use function from data_preprocessing.py
 data = preprocess_data()
@@ -30,37 +31,64 @@ test_X_normalized = scaler.transform(test_X_dropped)
 train_X_normalized = pd.DataFrame(train_X_normalized, columns=train_X.columns)
 test_X_normalized = pd.DataFrame(test_X_normalized, columns=test_X_dropped.columns)
 
-# Create empty model
-model = Sequential()
+# Define the number of folds for cross-validation
+num_folds = 5
 
-# Defining the Input layer
-model.add(Input(shape=(52,)))
+# Initialize KFold object
+kf = KFold(n_splits=num_folds)
 
-# Add more layers
-model.add(Dense(units=36, activation='relu'))
-model.add(Dropout(0.01))
-model.add(Dense(units=24, activation='relu'))
-model.add(Dropout(0.01))
-model.add(Dense(units=12, activation='relu'))
-model.add(Dropout(0.01))
+# Lists to store MSE for each fold
+mse_scores = []
 
-# Output layer
-model.add(Dense(1, kernel_initializer='normal'))
+# Perform k-fold cross-validation
+for train_index, val_index in kf.split(train_X_normalized):
+    # Split data into training and validation sets for this fold
+    X_train_fold, X_val_fold = train_X_normalized.iloc[train_index], train_X_normalized.iloc[val_index]
+    y_train_fold, y_val_fold = train_Y.iloc[train_index], train_Y.iloc[val_index]
 
-# Compile
-model.compile(loss='mean_squared_error', optimizer='adam')
+    # Create a new model for each fold
+    model_cv = Sequential()
+    model_cv.add(Input(shape=(104,)))
+    model_cv.add(Dense(units=72, activation='relu'))
+    model_cv.add(Dropout(0.01))
+    model_cv.add(Dense(units=48, activation='relu'))
+    model_cv.add(Dropout(0.01))
+    model_cv.add(Dense(units=24, activation='relu'))
+    model_cv.add(Dropout(0.01))
+    model_cv.add(Dense(1, kernel_initializer='normal'))
+    model_cv.compile(loss='mean_squared_error', optimizer='adam')
 
-# Fit the model to training set
-model.fit(train_X_normalized, train_Y, batch_size=10, epochs=700)
+    # Train the model on this fold
+    model_cv.fit(X_train_fold, y_train_fold, batch_size=10, epochs=50, verbose=0)
 
-# For testing
-# Predictions = model.predict(train_X_normalized)
-# TestingData = pd.DataFrame(data=train_X_normalized, columns=train_X_normalized.columns[1:])
+    # Evaluate the model on the validation set for this fold
+    y_pred_fold = model_cv.predict(X_val_fold)
+    mse_fold = mean_squared_error(y_val_fold, y_pred_fold)
+    mse_scores.append(mse_fold)
 
-# Get test data
-Predictions = model.predict(test_X_normalized)
+# Calculate average MSE across all folds
+avg_mse = np.mean(mse_scores)
+print('Average MSE across all folds:', avg_mse)
+
+# Train the final model on the entire training set
+final_model = Sequential()
+final_model.add(Input(shape=(104,)))
+final_model.add(Dense(units=72, activation='relu'))
+final_model.add(Dropout(0.01))
+final_model.add(Dense(units=48, activation='relu'))
+final_model.add(Dropout(0.01))
+final_model.add(Dense(units=24, activation='relu'))
+final_model.add(Dropout(0.01))
+final_model.add(Dense(1, kernel_initializer='normal'))
+final_model.compile(loss='mean_squared_error', optimizer='adam')
+
+# Train the final model on the entire training set
+final_model.fit(train_X_normalized, train_Y, batch_size=10, epochs=50)
+
+# Make predictions on the test set using the final trained model
+test_predictions = final_model.predict(test_X_normalized)
 TestingData = pd.DataFrame(data=test_X_normalized, columns=test_X_dropped.columns)
-TestingData['Predicted Survival Months'] = Predictions
+TestingData['Predicted Survival Months'] = test_predictions
 print(TestingData.head())
 
 """

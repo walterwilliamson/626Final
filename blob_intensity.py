@@ -1,20 +1,19 @@
-# break into grids and average intense blobs
 import numpy as np
 import pandas as pd
 import imageio
-from IPython.display import display, Image
-import time
-from tqdm import tqdm
 import os
+from tqdm import tqdm
 
-# ---------- specify these args ----------
-img_dir = 'images'  # dir that saves your images
-n_train = 281  # number of images
-n_protein = 52  # number of proteins
-# ----------------------------------------
+# Specify these args
+img_dir = 'images'  # Directory that saves your images
+n_train = 281  # Number of images
+n_protein = 52  # Number of proteins
 
+# Initialize the list to store average intensity of top tiles for each protein
 avg_list = []
-for i in tqdm(np.arange(1, n_train + 1), total=n_train, desc="Processing"):
+
+# Process each image
+for i in tqdm(range(1, n_train + 1), total=n_train, desc="Processing"):
     img_file_name = f'{i}.tiff'
     path = os.path.join(img_dir, img_file_name)
     img = imageio.v2.imread(path)
@@ -32,19 +31,22 @@ for i in tqdm(np.arange(1, n_train + 1), total=n_train, desc="Processing"):
     tile_averages.sort(reverse=True)
 
     # Take the top ten tiles
-    top_ten = tile_averages[:10]
+    top_ten_tiles = tiles[:10]
 
-    # Calculate the mean intensity of the top ten tiles
-    top_ten_mean = sum(top_ten) / 10
+    # Calculate the average intensity for each protein using the ten most intense tiles
+    protein_intensities = {"id" : i}
+    for j in range(1, n_protein + 1):
+        protein_tile_intensities = [tile[:, :, j-1] for tile in top_ten_tiles]
+        protein_intensities['protein' + str(j)] = np.mean(protein_tile_intensities)
 
     # Append to avg_list
-    avg_list.append([i] + [top_ten_mean] * n_protein)
+    avg_list.append(protein_intensities)
 
-avg_df = pd.DataFrame(avg_list, columns=['id'] + ['protein' + str(i) for i in range(1, 52 + 1)])
+# Convert the list to DataFrame
+avg_df = pd.DataFrame(avg_list)
+
+# Save the DataFrame to CSV
 avg_df.to_csv('blob_intensity.csv', index=False)
 
+# Print the DataFrame
 print(avg_df.head())
-
-# did this work
-# did this work part 2
-# walter was here

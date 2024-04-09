@@ -24,7 +24,3 @@ avg_df = pd.DataFrame(avg_list, columns=['id'] + ['protein' + str(i) for i in ra
 avg_df.to_csv('avg_intensity.csv', index=False)
 
 print(avg_df.head())
-
-# did this work
-# did this work part 2
-# walter was here

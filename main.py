@@ -32,21 +32,22 @@ test_X_normalized = scaler.transform(test_X_dropped)
 train_X_normalized = pd.DataFrame(train_X_normalized, columns=train_X.columns)
 test_X_normalized = pd.DataFrame(test_X_normalized, columns=test_X_dropped.columns)
 
-# epochs to try
-epochs = [10, 20, 30, 40, 50, 60, 70, 80, 90]
 
-# epochs, train error, test error
-epoch_errors = []
-for e in epochs:
-    epoch_errors.append(kfold_cv(5, e, train_X_normalized, train_Y, 32))
-
+# epochs, train error, test error, batch size
 batches = [32, 64, 128, 256]
-batch_errors = []
+epochs = [10, 20, 30, 40, 50, 60, 70, 80, 90]
+errors = []
 for b in batches:
-    batch_errors.append(kfold_cv(5, 40, train_X_normalized, train_Y, b))
+    for e in epochs:
+        errors.append(kfold_cv(5, e, train_X_normalized, train_Y, b))
 
-for x in epoch_errors:
-    print(x)
+smallest_test_error_index = 0
+for i in range(len(errors)):
+    if errors[i][2] > smallest_test_error_index:
+        smallest_test_error_index = i
+
+best_num_epochs = errors[smallest_test_error_index][0]
+best_num_batches = errors[smallest_test_error_index][3]
 
 # Train the final model on the entire training set
 final_model = Sequential()
@@ -61,7 +62,7 @@ final_model.add(Dense(1, kernel_initializer='normal'))
 final_model.compile(loss='mean_squared_error', optimizer='adam')
 
 # Train the final model on the entire training set
-final_model.fit(train_X_normalized, train_Y, batch_size=32, epochs=21, verbose=0)
+final_model.fit(train_X_normalized, train_Y, batch_size=best_num_batches, epochs=best_num_epochs, verbose=0)
 
 # Make predictions on the test set using the final trained model
 test_predictions = final_model.predict(test_X_normalized)

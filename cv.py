@@ -7,7 +7,7 @@ from keras.layers import Dropout
 
 
 # Perform k-fold cross-validation
-def kfold_cv(num_folds, epochs, training_data, outcome_data, batch):
+def kfold_cv(num_folds, epochs, training_data, outcome_data, batch, layers):
     np.random.seed(10)
     # Initialize KFold object
     kf = KFold(n_splits=num_folds)
@@ -25,10 +25,12 @@ def kfold_cv(num_folds, epochs, training_data, outcome_data, batch):
         model_cv.add(Input(shape=(104,)))
         model_cv.add(Dense(units=72, activation='relu'))
         model_cv.add(Dropout(0.2))
-        model_cv.add(Dense(units=48, activation='relu'))
-        model_cv.add(Dropout(0.2))
-        model_cv.add(Dense(units=24, activation='relu'))
-        model_cv.add(Dropout(0.2))
+        if layers >= 2:
+            model_cv.add(Dense(units=48, activation='relu'))
+            model_cv.add(Dropout(0.2))
+            if layers == 3:
+                model_cv.add(Dense(units=24, activation='relu'))
+                model_cv.add(Dropout(0.2))
         model_cv.add(Dense(1, kernel_initializer='normal'))
         model_cv.compile(loss='mean_squared_error', optimizer='adam')
 
@@ -45,4 +47,4 @@ def kfold_cv(num_folds, epochs, training_data, outcome_data, batch):
     avg_test_error = np.mean(test_errors)
     avg_train_error = np.mean(train_errors)
 
-    return [epochs, avg_train_error, avg_test_error, batch]
+    return [epochs, avg_train_error, avg_test_error, batch, layers]

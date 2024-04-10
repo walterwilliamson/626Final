@@ -7,8 +7,10 @@ from sklearn.preprocessing import StandardScaler
 from data_preprocessing import preprocess_data
 from keras.layers import Dropout
 from cv import kfold_cv
+import tensorflow as tf
 
 np.random.seed(10)
+tf.random.set_seed(10)
 
 # use function from data_preprocessing.py
 data = preprocess_data()
@@ -86,6 +88,9 @@ print("Epochs Used: ", best_num_epochs)
 print("Batch Size Used: ", best_num_batches)
 print("Number of Hidden Layers: ", best_num_layers)
 print(TestingData.head())
+
+final_outcomes = pd.DataFrame(data=test_predictions, columns=['Predicted Survival Months'])
+final_outcomes.to_csv('final_outcomes.csv', index=False)
 
 # Constructing the DataFrame
 columns = ['Epochs', 'Batch Size', 'Training Error', 'Testing Error']

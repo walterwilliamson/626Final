@@ -7,10 +7,9 @@ from sklearn.preprocessing import StandardScaler
 from data_preprocessing import preprocess_data
 from keras.layers import Dropout
 from cv import kfold_cv
-import tensorflow as tf
+import keras
 
-np.random.seed(10)
-tf.random.set_seed(10)
+keras.utils.set_random_seed(812)
 
 # use function from data_preprocessing.py
 data = preprocess_data()
@@ -121,4 +120,3 @@ print(layer_df)
 # Saving the DataFrame to CSV files
 layer_df.to_csv('layers_errors.csv', index=False)
 df.to_csv('epochs_errors.csv', index=False)
-

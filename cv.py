@@ -4,14 +4,14 @@ from keras.models import Sequential
 from keras.layers import Dense, Input
 from sklearn.metrics import mean_squared_error
 from keras.layers import Dropout
-import tensorflow as tf
+import keras
+
+keras.utils.set_random_seed(812)
 
 
 
 # Perform k-fold cross-validation
 def kfold_cv(num_folds, epochs, training_data, outcome_data, batch, layers):
-    np.random.seed(10)
-    tf.random.set_seed(10)
     # Initialize KFold object
     kf = KFold(n_splits=num_folds)
     # Lists to store MSE for each fold

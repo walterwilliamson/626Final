@@ -1,0 +1,46 @@
+---
+title: "report_plots"
+author: "Walter Williamson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+```{r}
+epochs_errors <- epochs_errors %>%
+  pivot_longer(cols = c("Training.Error", "Testing.Error"),
+               names_to = "error_type", values_to = "MSE")
+
+layers_errors <- layers_errors %>%
+  pivot_longer(cols = c("Training.Error", "Testing.Error"),
+               names_to = "error_type", values_to = "MSE")
+```
+
+
+```{r}
+epochs_errors %>%
+  filter(Batch.Size == 32) %>%
+  ggplot(aes(x = Epochs, y = MSE, color = error_type)) + 
+  geom_line() + labs(y = "Mean Squared Error") 
+```
+
+```{r}
+epochs_errors %>%
+  filter(Epochs == 40) %>%
+  ggplot(aes(x = Batch.Size, y = MSE, color = error_type)) + 
+  geom_line() + labs(y = "Mean Squared Error", x = "Batch Size") 
+```
+
+```{r}
+layers_errors %>%
+  ggplot(aes(x = Number.of.Layers, y = MSE, color = error_type)) + 
+  geom_line() + labs(y = "Mean Squared Error", x = "Number of Layers")
+  
+```
+

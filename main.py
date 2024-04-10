@@ -82,7 +82,8 @@ final_model.fit(train_X_normalized, train_Y, batch_size=best_num_batches, epochs
 test_predictions = final_model.predict(test_X_normalized)
 TestingData = pd.DataFrame(data=test_X_normalized, columns=test_X_dropped.columns)
 TestingData['Predicted Survival Months'] = test_predictions
-TestingData.to_csv('TestingData.csv', index=False)
+tests_last_col = TestingData['Predicted Survival Months']
+tests_last_col.to_csv('TestingData.csv', index=False)
 print("Epochs Used: ", best_num_epochs)
 print("Batch Size Used: ", best_num_batches)
 print("Number of Hidden Layers: ", best_num_layers)

@@ -65,7 +65,7 @@ test_predictions = final_model.predict(test_X_normalized)
 TestingData = pd.DataFrame(data=test_X_normalized, columns=test_X_dropped.columns)
 TestingData['Predicted Survival Months'] = test_predictions
 tests_last_col = TestingData['Predicted Survival Months']
-tests_last_col.to_csv('TestingData.csv', index=False)
+tests_last_col.to_csv('FinalPredictions.csv', index=False)
 print(TestingData.head())
 
 columns = ['Epochs', 'Batch Size', 'Training Error', 'Testing Error']

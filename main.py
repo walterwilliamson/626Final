@@ -36,22 +36,11 @@ test_X_normalized = pd.DataFrame(test_X_normalized, columns=test_X_dropped.colum
 # epochs, train error, test error, batch size
 batches = [32, 64, 128, 256]
 epochs = [10, 20, 30, 40, 50, 60, 70, 80, 90]
-layers = [1, 2, 3]
-layers_errors = []
 errors = []
 
-for num in layers:
-    layers_errors.append(kfold_cv(5, 10, train_X_normalized, train_Y, 32, num))
-
-smallest_test_error_index = 0
-for i in range(len(layers_errors)):
-    if layers_errors[i][2] < layers_errors[smallest_test_error_index][2]:
-        smallest_test_error_index = i
-
-best_num_layers = layers_errors[smallest_test_error_index][4]
 for b in batches:
     for e in epochs:
-        errors.append(kfold_cv(5, e, train_X_normalized, train_Y, b, best_num_layers))
+        errors.append(kfold_cv(5, e, train_X_normalized, train_Y, b))
 
 smallest_test_error_index = 0
 for i in range(len(errors)):
@@ -64,14 +53,10 @@ best_num_batches = errors[smallest_test_error_index][3]
 # Train the final model on the entire training set
 final_model = Sequential()
 final_model.add(Input(shape=(104,)))
-final_model.add(Dense(units=72, activation='relu'))
+final_model.add(Dense(units=70, activation='relu'))
 final_model.add(Dropout(0.2))
-if best_num_layers >= 2:
-    final_model.add(Dense(units=48, activation='relu'))
-    final_model.add(Dropout(0.2))
-    if best_num_layers == 3:
-        final_model.add(Dense(units=24, activation='relu'))
-        final_model.add(Dropout(0.2))
+final_model.add(Dense(units=35, activation='relu'))
+final_model.add(Dropout(0.2))
 final_model.add(Dense(1, kernel_initializer='normal'))
 final_model.compile(loss='mean_squared_error', optimizer='adam')
 
@@ -86,7 +71,6 @@ tests_last_col = TestingData['Predicted Survival Months']
 tests_last_col.to_csv('TestingData.csv', index=False)
 print("Epochs Used: ", best_num_epochs)
 print("Batch Size Used: ", best_num_batches)
-print("Number of Hidden Layers: ", best_num_layers)
 print(TestingData.head())
 
 # Constructing the DataFrame
@@ -94,7 +78,7 @@ columns = ['Epochs', 'Batch Size', 'Training Error', 'Testing Error']
 data = []
 
 for error in errors:
-    epochs, train_error, test_error, batch_size, _ = error
+    epochs, train_error, test_error, batch_size = error
     data.append([epochs, batch_size, train_error, test_error])
 
 df = pd.DataFrame(data, columns=columns)
@@ -102,19 +86,5 @@ df = pd.DataFrame(data, columns=columns)
 # Print or manipulate the DataFrame as needed
 print(df)
 
-# Constructing the DataFrame for layers_errors
-layer_columns = ['Number of Layers', 'Training Error', 'Testing Error']
-layer_data = []
-
-for error in layers_errors:
-    epochs, train_error, test_error, batch_size, num_layers = error
-    layer_data.append([num_layers, train_error, test_error])
-
-layer_df = pd.DataFrame(layer_data, columns=layer_columns)
-
-# Print or manipulate the DataFrame as needed
-print(layer_df)
-
 # Saving the DataFrame to CSV files
-layer_df.to_csv('layers_errors.csv', index=False)
 df.to_csv('epochs_errors.csv', index=False)

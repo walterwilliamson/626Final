@@ -42,11 +42,10 @@ for i in tqdm(range(1, n_train + 1), total=n_train, desc="Processing"):
     # Append to avg_list
     avg_list.append(protein_intensities)
 
-# Convert the list to DataFrame
+# Convert the list to Data frame
 avg_df = pd.DataFrame(avg_list)
 
-# Save the DataFrame to CSV
+# Save to csv
 avg_df.to_csv('blob_intensity.csv', index=False)
 
-# Print the DataFrame
 print(avg_df.head())

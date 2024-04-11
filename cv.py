@@ -9,9 +9,7 @@ import keras
 keras.utils.set_random_seed(812)
 
 
-# Perform k-fold cross-validation
 def kfold_cv(num_folds, epochs, training_data, outcome_data, batch):
-    # Initialize KFold object
     kf = KFold(n_splits=num_folds)
     # Lists to store MSE for each fold
     train_errors = []

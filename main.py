@@ -68,7 +68,6 @@ tests_last_col = TestingData['Predicted Survival Months']
 tests_last_col.to_csv('TestingData.csv', index=False)
 print(TestingData.head())
 
-# Constructing the DataFrame
 columns = ['Epochs', 'Batch Size', 'Training Error', 'Testing Error']
 data = []
 
@@ -76,7 +75,8 @@ for error in errors:
     epochs, train_error, test_error, batch_size = error
     data.append([epochs, batch_size, train_error, test_error])
 
+# Data frame for epochs/batch sizes and corresponding errors
 df = pd.DataFrame(data, columns=columns)
 
-# Saving the DataFrame to CSV files
+# Save to csv
 df.to_csv('epochs_errors.csv', index=False)

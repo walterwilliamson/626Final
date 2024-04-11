@@ -47,9 +47,6 @@ for i in range(len(errors)):
     if errors[i][2] < errors[smallest_test_error_index][2]:
         smallest_test_error_index = i
 
-best_num_epochs = errors[smallest_test_error_index][0]
-best_num_batches = errors[smallest_test_error_index][3]
-
 # Train the final model on the entire training set
 final_model = Sequential()
 final_model.add(Input(shape=(104,)))
@@ -61,7 +58,7 @@ final_model.add(Dense(1, kernel_initializer='normal'))
 final_model.compile(loss='mean_squared_error', optimizer='adam')
 
 # Train the final model on the entire training set
-final_model.fit(train_X_normalized, train_Y, batch_size=best_num_batches, epochs=best_num_epochs, verbose=0)
+final_model.fit(train_X_normalized, train_Y, batch_size=64, epochs=40, verbose=0)
 
 # Make predictions on the test set using the final trained model
 test_predictions = final_model.predict(test_X_normalized)
@@ -69,8 +66,6 @@ TestingData = pd.DataFrame(data=test_X_normalized, columns=test_X_dropped.column
 TestingData['Predicted Survival Months'] = test_predictions
 tests_last_col = TestingData['Predicted Survival Months']
 tests_last_col.to_csv('TestingData.csv', index=False)
-print("Epochs Used: ", best_num_epochs)
-print("Batch Size Used: ", best_num_batches)
 print(TestingData.head())
 
 # Constructing the DataFrame
@@ -82,9 +77,6 @@ for error in errors:
     data.append([epochs, batch_size, train_error, test_error])
 
 df = pd.DataFrame(data, columns=columns)
-
-# Print or manipulate the DataFrame as needed
-print(df)
 
 # Saving the DataFrame to CSV files
 df.to_csv('epochs_errors.csv', index=False)

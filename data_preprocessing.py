@@ -7,10 +7,10 @@ def preprocess_data():
     blob_intensity = pd.read_csv("blob_intensity.csv")
 
     train_intensity = intensity[0:224]
-    test = intensity[225:280]
+    test = intensity[225:281]
 
     train_blob_intensity = blob_intensity[0:224]
-    test_blob = blob_intensity[225:280]
+    test_blob = blob_intensity[225:281]
 
     train_outcome = pd.read_csv("train_data.csv")
 
